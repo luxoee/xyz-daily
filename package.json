@@ -1,5 +1,5 @@
 {
-  "name": "mail-code-helper",
+  "name": "xyz-daily",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -7,11 +7,15 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "pages:dev": "npm run build && wrangler pages dev dist --compatibility-date=2026-05-30",
+    "deploy": "npm run build && wrangler pages deploy dist --project-name xyz-daily",
+    "deploy:preview": "npm run build && wrangler pages deploy dist --project-name xyz-daily --branch preview"
   },
   "devDependencies": {
     "@vitejs/plugin-basic-ssl": "latest",
     "typescript": "latest",
-    "vite": "latest"
+    "vite": "latest",
+    "wrangler": "latest"
   }
 }

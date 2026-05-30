@@ -58,3 +58,36 @@ Avoid `path` as a variable name in fish shell scripts; use names like `endpoint`
 - Related Files: none
 
 ---
+
+## [ERR-20260530-001] wrangler_pages_dev_functions_flag
+
+**Logged**: 2026-05-30T06:21:00Z
+**Priority**: low
+**Status**: resolved
+**Area**: infra
+
+### Summary
+Current Wrangler rejected the older `wrangler pages dev --functions functions` option.
+
+### Error
+```
+Unknown argument: functions
+```
+
+### Context
+- Operation attempted: local Cloudflare Pages runtime smoke test.
+- Command: `npx wrangler pages dev dist --functions functions --compatibility-date=2026-05-30 --port 8788`.
+- Environment: Wrangler installed from `latest` in this project.
+
+### Suggested Fix
+Use `wrangler pages dev dist --compatibility-date=2026-05-30`; Wrangler auto-detects the project `functions/` directory from the current working directory.
+
+### Metadata
+- Reproducible: yes
+- Related Files: package.json
+
+### Resolution
+- **Resolved**: 2026-05-30T06:22:00Z
+- **Notes**: Updated `pages:dev` script and verified `/`, `/gen/`, `/api/time`, and `/generator.html` redirect locally.
+
+---
