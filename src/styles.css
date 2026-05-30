@@ -286,21 +286,30 @@ textarea:focus,
 }
 
 .session-status {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  min-height: 112px;
+  padding: 14px;
+  font-weight: 900;
+}
+
+.status-line,
+.countdown-line {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 12px;
-  min-height: 64px;
-  font-weight: 900;
 }
 
 .session-status span {
   color: #8a6040;
   font-size: 13px;
   letter-spacing: 0.14em;
+  white-space: nowrap;
 }
 
-.session-status strong {
+.status-line strong {
   padding: 6px 18px;
   border-radius: 999px;
   color: #fffaf0;
@@ -308,22 +317,27 @@ textarea:focus,
   letter-spacing: 0.12em;
 }
 
-.session-status.valid strong {
+.session-status.valid .status-line strong {
   background: #2f6f45;
   box-shadow: 0 10px 24px rgba(47, 111, 69, 0.18);
 }
 
-.session-status.invalid strong {
+.session-status.invalid .status-line strong {
   background: #8a2326;
   box-shadow: 0 10px 24px rgba(138, 35, 38, 0.18);
 }
 
 .email-row {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 12px;
+  gap: 10px;
   padding: 14px;
+}
+
+.email-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
 }
 
 .email-label,
@@ -336,9 +350,10 @@ textarea:focus,
 
 .email-value {
   display: block;
+  width: 100%;
   min-width: 0;
   overflow: hidden;
-  padding: 10px 12px;
+  padding: 12px;
   border-radius: 12px;
   color: #2c1d12;
   background: rgba(255, 252, 246, 0.78);
@@ -361,13 +376,17 @@ textarea:focus,
 
 .validity-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 132px;
-  gap: 12px;
+  grid-template-columns: 1fr;
+  gap: 10px;
   padding: 12px;
 }
 
 .info-item {
-  min-height: 76px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  min-height: 54px;
   padding: 12px;
   border-radius: 14px;
   background: rgba(255, 252, 246, 0.54);
@@ -375,16 +394,21 @@ textarea:focus,
 
 .info-item span {
   display: block;
-  margin-bottom: 8px;
+  white-space: nowrap;
 }
 
 .info-item strong {
+  min-width: 0;
   color: #2c1d12;
-  overflow-wrap: anywhere;
+  overflow: hidden;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.countdown-item {
-  text-align: center;
+.expires-value {
+  font-size: clamp(13px, 3.6vw, 16px);
+  font-variant-numeric: tabular-nums;
 }
 
 .countdown-value {
@@ -392,11 +416,11 @@ textarea:focus,
   min-width: 8ch;
   color: #8a2326;
   font-family: ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-  font-size: 20px;
+  font-size: clamp(30px, 9vw, 42px);
   font-variant-numeric: tabular-nums;
   font-weight: 950;
-  letter-spacing: 0.08em;
-  line-height: 1.15;
+  letter-spacing: 0.06em;
+  line-height: 1.05;
   text-align: center;
   white-space: nowrap;
 }
@@ -472,6 +496,7 @@ textarea:focus,
 
 .link-output {
   min-height: 122px;
+  cursor: pointer;
 }
 
 @media (max-width: 920px) {
@@ -527,9 +552,7 @@ textarea:focus,
     flex-direction: column;
   }
 
-  .form-grid,
-  .validity-row,
-  .email-row {
+  .form-grid {
     grid-template-columns: 1fr;
   }
 

@@ -83,7 +83,7 @@ function renderSession() {
   sessionBox.replaceChildren();
 
   if (!activeSession) {
-    sessionBox.appendChild(statusRow(false, "未加载"));
+    sessionBox.appendChild(statusRow(false, "未加载", "00:00:00"));
     refreshButton.disabled = true;
     copyButton.disabled = true;
     return;
@@ -91,26 +91,46 @@ function renderSession() {
 
   const valid = isLinkValid();
   sessionBox.append(
-    statusRow(valid, valid ? "有效" : "无效"),
+    statusRow(valid, valid ? "有效" : "无效", formatCountdown(activeSession.expiresAt - getServerNow())),
     emailRow(activeSession.email || "等待获取邮箱"),
-    validityRow(activeSession.duration, formatDateTime(activeSession.expiresAt), formatCountdown(activeSession.expiresAt - getServerNow())),
+    validityRow(activeSession.duration, formatDateTime(activeSession.expiresAt)),
   );
 
   refreshButton.disabled = !activeSession.email || !activeSession.secret || activeSession.status === "loading" || !valid;
   copyButton.disabled = !activeSession.verificationCode;
 }
 
-function statusRow(valid: boolean, value: string) {
+function statusRow(valid: boolean, value: string, countdown: string) {
   const row = document.createElement("div");
   row.className = `session-status ${valid ? "valid" : "invalid"}`;
-  row.append(createText("span", "有效状态"), createText("strong", value));
+
+  const statusLine = document.createElement("div");
+  statusLine.className = "status-line";
+  statusLine.append(createText("span", "有效状态"), createText("strong", value));
+
+  const countdownLine = document.createElement("div");
+  countdownLine.className = "countdown-line";
+  countdownLine.append(createText("span", "剩余时间"), createText("strong", countdown, "countdown-value"));
+
+  row.append(statusLine, countdownLine);
   return row;
 }
 
 function emailRow(email: string) {
   const row = document.createElement("div");
   row.className = "email-row";
+
+  const header = document.createElement("div");
+  header.className = "email-head";
   const label = createText("span", "邮箱名称", "email-label");
+  const copyEmailButton = document.createElement("button");
+  copyEmailButton.className = "email-copy secondary";
+  copyEmailButton.type = "button";
+  copyEmailButton.textContent = "复制邮箱";
+  copyEmailButton.disabled = !activeSession?.email;
+  copyEmailButton.addEventListener("click", copyEmail);
+  header.append(label, copyEmailButton);
+
   const emailButton = document.createElement("button");
   emailButton.className = "email-value";
   emailButton.type = "button";
@@ -118,27 +138,20 @@ function emailRow(email: string) {
   emailButton.disabled = !activeSession?.email;
   emailButton.addEventListener("click", copyEmail);
 
-  const copyEmailButton = document.createElement("button");
-  copyEmailButton.className = "email-copy secondary";
-  copyEmailButton.type = "button";
-  copyEmailButton.textContent = "复制邮箱";
-  copyEmailButton.disabled = !activeSession?.email;
-  copyEmailButton.addEventListener("click", copyEmail);
-
-  row.append(label, emailButton, copyEmailButton);
+  row.append(header, emailButton);
   return row;
 }
 
-function validityRow(duration: string, expiresAt: string, countdown: string) {
+function validityRow(duration: string, expiresAt: string) {
   const row = document.createElement("div");
   row.className = "validity-row";
-  row.append(infoItem("有效时长", duration), infoItem("有效期至", expiresAt), infoItem("剩余时间", countdown, "countdown-value"));
+  row.append(infoItem("有效时长", duration), infoItem("有效期至", expiresAt, "expires-value"));
   return row;
 }
 
 function infoItem(label: string, value: string, valueClassName?: string) {
   const item = document.createElement("div");
-  item.className = valueClassName ? "info-item countdown-item" : "info-item";
+  item.className = "info-item";
   item.append(createText("span", label), createText("strong", value, valueClassName));
   return item;
 }

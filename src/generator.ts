@@ -64,12 +64,14 @@ async function copyLink() {
   if (!linkOutput.value) {
     return;
   }
+  linkOutput.select();
   await navigator.clipboard?.writeText(linkOutput.value).catch(() => undefined);
   setStatus("访问链接已复制。", "ok");
 }
 
 generateButton.addEventListener("click", generateLink);
 copyLinkButton.addEventListener("click", copyLink);
+linkOutput.addEventListener("click", copyLink);
 codeInput.addEventListener("keydown", (event) => {
   if (event.key === "Enter") {
     event.preventDefault();
