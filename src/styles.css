@@ -136,8 +136,9 @@ h2 {
 
 .form-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(160px, 220px);
+  grid-template-columns: minmax(18ch, 1fr);
   gap: 16px;
+  align-items: end;
 }
 
 .form-grid label {
@@ -159,6 +160,35 @@ textarea,
   color: #2b2118;
   line-height: 1.7;
   transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+#codeInput {
+  min-width: 0;
+  font-family: ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  letter-spacing: 0.02em;
+}
+
+.duration-label {
+  width: 112px;
+}
+
+.duration-control {
+  display: grid;
+  grid-template-columns: 68px 28px;
+  align-items: center;
+  gap: 6px;
+}
+
+.duration-control input {
+  padding-right: 8px;
+  padding-left: 8px;
+  text-align: center;
+}
+
+.duration-control em {
+  color: #8a6040;
+  font-style: normal;
+  font-weight: 900;
 }
 
 textarea {
@@ -331,7 +361,7 @@ textarea:focus,
 
 .validity-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 132px;
   gap: 12px;
   padding: 12px;
 }
@@ -351,6 +381,24 @@ textarea:focus,
 .info-item strong {
   color: #2c1d12;
   overflow-wrap: anywhere;
+}
+
+.countdown-item {
+  text-align: center;
+}
+
+.countdown-value {
+  display: inline-block;
+  min-width: 8ch;
+  color: #8a2326;
+  font-family: ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 20px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  line-height: 1.15;
+  text-align: center;
+  white-space: nowrap;
 }
 
 .result-card {
@@ -439,16 +487,32 @@ textarea:focus,
 @media (max-width: 720px) {
   .shell,
   .compact-shell {
-    width: min(100% - 22px, 820px);
-    padding: 36px 0;
+    width: min(100% - 18px, 820px);
+    padding: 28px 0;
+  }
+
+  .hero {
+    margin-bottom: 18px;
+  }
+
+  .eyebrow {
+    margin-bottom: 8px;
+    font-size: 11px;
+    letter-spacing: 0.24em;
   }
 
   h1 {
+    font-size: clamp(34px, 12vw, 54px);
     letter-spacing: 0.04em;
   }
 
+  h2 {
+    font-size: 18px;
+  }
+
   .panel {
-    padding: 18px;
+    margin-bottom: 16px;
+    padding: 16px;
     border-radius: 22px;
   }
 
@@ -467,6 +531,37 @@ textarea:focus,
   .validity-row,
   .email-row {
     grid-template-columns: 1fr;
+  }
+
+  .duration-label {
+    width: 112px;
+  }
+
+  textarea,
+  .form-grid input {
+    padding: 13px 12px;
+  }
+
+  #codeInput {
+    font-size: 15px;
+  }
+
+  .email-row {
+    gap: 8px;
+    padding: 12px;
+  }
+
+  .email-value {
+    font-size: 13px;
+  }
+
+  .result-card {
+    min-height: 172px;
+    padding: 28px 16px;
+  }
+
+  .verification-code {
+    font-size: clamp(42px, 16vw, 74px);
   }
 
   .primary,

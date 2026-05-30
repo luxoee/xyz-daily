@@ -12,7 +12,8 @@ const statusBox = getElement<HTMLDivElement>("statusBox");
 const resultBox = getElement<HTMLDivElement>("resultBox");
 
 let activeSession: ActiveSession | null = null;
-let serverNow = 0;
+let serverTimeOffset = 0;
+let countdownTimer: ReturnType<typeof window.setInterval> | null = null;
 
 function getElement<T extends HTMLElement>(id: string): T {
   const element = document.getElementById(id);
@@ -36,6 +37,10 @@ function createText<K extends keyof HTMLElementTagNameMap>(tag: K, text: string,
   return element;
 }
 
+function getServerNow() {
+  return Date.now() + serverTimeOffset;
+}
+
 async function readLinkParams() {
   const params = new URLSearchParams(window.location.search);
   const encrypted = params.get("p") || "";
@@ -56,7 +61,8 @@ async function readLinkParams() {
     throw new Error("访问参数不完整，请重新生成访问链接。");
   }
 
-  serverNow = await getBeijingNow();
+  const serverNow = await getBeijingNow();
+  serverTimeOffset = serverNow - Date.now();
   if (serverNow > expiresAt) {
     throw new Error("当前访问链接已过期，请重新生成。");
   }
@@ -69,6 +75,10 @@ async function readLinkParams() {
   };
 }
 
+function isLinkValid() {
+  return Boolean(activeSession && activeSession.expiresAt > getServerNow());
+}
+
 function renderSession() {
   sessionBox.replaceChildren();
 
@@ -79,11 +89,11 @@ function renderSession() {
     return;
   }
 
-  const valid = activeSession.expiresAt > serverNow;
+  const valid = isLinkValid();
   sessionBox.append(
     statusRow(valid, valid ? "有效" : "无效"),
     emailRow(activeSession.email || "等待获取邮箱"),
-    validityRow(activeSession.duration, formatDateTime(activeSession.expiresAt)),
+    validityRow(activeSession.duration, formatDateTime(activeSession.expiresAt), formatCountdown(activeSession.expiresAt - getServerNow())),
   );
 
   refreshButton.disabled = !activeSession.email || !activeSession.secret || activeSession.status === "loading" || !valid;
@@ -119,18 +129,26 @@ function emailRow(email: string) {
   return row;
 }
 
-function validityRow(duration: string, expiresAt: string) {
+function validityRow(duration: string, expiresAt: string, countdown: string) {
   const row = document.createElement("div");
   row.className = "validity-row";
-  row.append(infoItem("有效时长", duration), infoItem("有效期至", expiresAt));
+  row.append(infoItem("有效时长", duration), infoItem("有效期至", expiresAt), infoItem("剩余时间", countdown, "countdown-value"));
   return row;
 }
 
-function infoItem(label: string, value: string) {
+function infoItem(label: string, value: string, valueClassName?: string) {
   const item = document.createElement("div");
-  item.className = "info-item";
-  item.append(createText("span", label), createText("strong", value));
+  item.className = valueClassName ? "info-item countdown-item" : "info-item";
+  item.append(createText("span", label), createText("strong", value, valueClassName));
   return item;
+}
+
+function formatCountdown(value: number) {
+  const seconds = Math.max(0, Math.ceil(value / 1000));
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const restSeconds = seconds % 60;
+  return [hours, minutes, restSeconds].map((part) => String(part).padStart(2, "0")).join(":");
 }
 
 function renderResult() {
@@ -170,8 +188,26 @@ function render() {
   renderResult();
 }
 
+function startCountdown() {
+  if (countdownTimer) {
+    window.clearInterval(countdownTimer);
+  }
+
+  countdownTimer = window.setInterval(() => {
+    if (!activeSession) {
+      return;
+    }
+    const wasValid = activeSession.expiresAt > getServerNow() - 1000;
+    const valid = isLinkValid();
+    if (!valid && wasValid && activeSession.status !== "loading") {
+      setStatus("当前访问链接已过期，请重新生成。", "error");
+    }
+    renderSession();
+  }, 1000);
+}
+
 function setBusy(busy: boolean) {
-  refreshButton.disabled = busy || !activeSession?.email || !activeSession.secret;
+  refreshButton.disabled = busy || !activeSession?.email || !activeSession.secret || !isLinkValid();
   refreshButton.textContent = busy ? "获取中..." : "获取验证码";
 }
 
@@ -179,8 +215,11 @@ async function ensureCredential() {
   if (!activeSession) {
     throw new Error("访问链接未加载。");
   }
+  if (!isLinkValid()) {
+    throw new Error("当前访问链接已过期，请重新生成。");
+  }
 
-  const cached = readCachedCredential(activeSession.cacheKey, serverNow);
+  const cached = readCachedCredential(activeSession.cacheKey, getServerNow());
   if (cached?.email && cached.secret) {
     activeSession.email = cached.email;
     activeSession.secret = cached.secret;
@@ -196,7 +235,7 @@ async function ensureCredential() {
     throw new Error(failedMessage || payload.detail || payload.message || "兑换码未换出可用邮箱。");
   }
 
-  const now = serverNow || Date.now();
+  const now = getServerNow();
   const credential: CachedMailCredential = {
     code: activeSession.code,
     email: item.email,
@@ -213,6 +252,11 @@ async function ensureCredential() {
 
 async function fetchVerificationCode() {
   if (!activeSession) {
+    return;
+  }
+  if (!isLinkValid()) {
+    setStatus("当前访问链接已过期，请重新生成。", "error");
+    renderSession();
     return;
   }
 
@@ -280,13 +324,14 @@ async function boot() {
       mailTimeLabel: "",
       freshnessLabel: "",
     };
-    const cached = readCachedCredential(cacheKey, serverNow);
+    const cached = readCachedCredential(cacheKey, getServerNow());
     if (cached) {
       activeSession.email = cached.email;
       activeSession.secret = cached.secret;
       activeSession.loadedFromCache = true;
     }
     render();
+    startCountdown();
     await fetchVerificationCode();
   } catch (error) {
     activeSession = null;
