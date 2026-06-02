@@ -38,7 +38,7 @@ async function buildAccessLink(code: string) {
     expiresAt,
     createdAt,
   });
-  const url = new URL("/", window.location.origin);
+  const url = new URL("/keria/", window.location.origin);
   url.searchParams.set("p", encrypted);
   return { link: url.toString(), expiresAt };
 }

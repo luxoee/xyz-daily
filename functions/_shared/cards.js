@@ -70,9 +70,50 @@ export async function createAccessLink(request, code) {
     expiresAt,
     createdAt,
   });
-  const link = new URL("/", new URL(request.url).origin);
+  const link = new URL("/keria/", new URL(request.url).origin);
   link.searchParams.set("p", encrypted);
   return { link: link.toString(), expiresAt, duration: LINK_DURATION };
+}
+
+export async function createKedayaLink(request, email, durationMs = LINK_DURATION_MS) {
+  const createdAt = Date.now();
+  const expiresAt = createdAt + durationMs;
+  const encrypted = await encryptPayload({
+    email: String(email || "").trim().toLowerCase(),
+    duration: formatDuration(durationMs),
+    expiresAt,
+    createdAt,
+  });
+  const link = new URL("/", new URL(request.url).origin);
+  link.searchParams.set("p", encrypted);
+  return { link: link.toString(), expiresAt, duration: formatDuration(durationMs) };
+}
+
+export async function readKedayaEmailToken(value) {
+  let payload;
+  try {
+    payload = await decryptPayload(String(value || ""));
+  } catch {
+    throw new Response(JSON.stringify({ ok: false, detail: "访问链接无效" }), {
+      status: 400,
+      headers: jsonHeaders(),
+    });
+  }
+  const email = String(payload.email || "").trim().toLowerCase();
+  const expiresAt = Number(payload.expiresAt);
+  if (!email || !expiresAt || Number.isNaN(expiresAt)) {
+    throw new Response(JSON.stringify({ ok: false, detail: "访问链接无效" }), {
+      status: 400,
+      headers: jsonHeaders(),
+    });
+  }
+  if (Date.now() > expiresAt) {
+    throw new Response(JSON.stringify({ ok: false, detail: "访问链接已过期" }), {
+      status: 410,
+      headers: jsonHeaders(),
+    });
+  }
+  return { email, expiresAt, duration: payload.duration || "" };
 }
 
 export function randomToken() {
@@ -140,9 +181,29 @@ async function encryptPayload(payload) {
   return base64UrlEncode(packed);
 }
 
+async function decryptPayload(value) {
+  const packed = base64UrlDecode(value);
+  if (packed.byteLength <= 12) {
+    throw new Response(JSON.stringify({ ok: false, detail: "访问链接无效" }), {
+      status: 400,
+      headers: jsonHeaders(),
+    });
+  }
+  const iv = packed.slice(0, 12);
+  const data = packed.slice(12);
+  const key = await deriveKey();
+  const decrypted = await crypto.subtle.decrypt({ name: "AES-GCM", iv }, key, data);
+  return JSON.parse(new TextDecoder().decode(decrypted));
+}
+
 async function deriveKey() {
   const hash = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(PASSWORD));
-  return crypto.subtle.importKey("raw", hash, "AES-GCM", false, ["encrypt"]);
+  return crypto.subtle.importKey("raw", hash, "AES-GCM", false, ["encrypt", "decrypt"]);
+}
+
+function formatDuration(durationMs) {
+  const minutes = Math.max(1, Math.round(durationMs / 60000));
+  return `${minutes}分钟`;
 }
 
 function base64UrlEncode(bytes) {
@@ -151,4 +212,14 @@ function base64UrlEncode(bytes) {
     binary += String.fromCharCode(byte);
   }
   return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+}
+
+function base64UrlDecode(value) {
+  const base64 = String(value || "").replace(/-/g, "+").replace(/_/g, "/").padEnd(Math.ceil(String(value || "").length / 4) * 4, "=");
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let index = 0; index < binary.length; index += 1) {
+    bytes[index] = binary.charCodeAt(index);
+  }
+  return bytes;
 }

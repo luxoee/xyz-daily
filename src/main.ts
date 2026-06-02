@@ -56,7 +56,7 @@ async function readLinkParams() {
   }
 
   const expiresAt = Number(payload.expiresAt);
-  const code = normalizeCode(payload.code);
+  const code = normalizeCode(payload.code || "");
   if (!code || !expiresAt || Number.isNaN(expiresAt) || !payload.duration) {
     throw new Error("访问参数不完整，请重新生成访问链接。");
   }

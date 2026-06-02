@@ -30,8 +30,11 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve(__dirname, "index.html"),
+        keria: resolve(__dirname, "keria/index.html"),
         gen: resolve(__dirname, "gen/index.html"),
         generator: resolve(__dirname, "generator.html"),
+        kedayaAdmin: resolve(__dirname, "kedaya/admin/index.html"),
+        kgen: resolve(__dirname, "kgen/index.html"),
       },
     },
   },

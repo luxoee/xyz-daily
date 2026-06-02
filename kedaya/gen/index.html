@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="no-referrer" />
+    <title>生成 Kedaya 取码链接</title>
+  </head>
+  <body>
+    <main class="shell compact-shell">
+      <section class="hero centered-hero">
+        <p class="eyebrow">Kedaya Link</p>
+        <h1>生成取码链接</h1>
+      </section>
+
+      <section class="panel" aria-labelledby="generatorLabel">
+        <div class="panel-head minimal-head">
+          <div>
+            <h2 id="generatorLabel">链接参数</h2>
+          </div>
+        </div>
+        <div class="form-grid">
+          <label>
+            <span>管理员密钥</span>
+            <input id="adminTokenInput" type="password" autocomplete="off" spellcheck="false" placeholder="CARD_ADMIN_TOKEN" />
+          </label>
+          <label>
+            <span>邮箱</span>
+            <input id="emailInput" autocomplete="off" spellcheck="false" placeholder="michaelalexander7182@outlook.com" />
+          </label>
+        </div>
+        <div class="actions centered-actions">
+          <button id="generateButton" class="primary" type="button">生成链接</button>
+          <button id="copyLinkButton" class="secondary" type="button" disabled>复制链接</button>
+        </div>
+        <div id="generatorStatus" class="status" role="status" aria-live="polite">等待输入邮箱。</div>
+      </section>
+
+      <section class="panel" aria-labelledby="linkLabel">
+        <div class="panel-head minimal-head">
+          <div>
+            <h2 id="linkLabel">访问链接</h2>
+          </div>
+        </div>
+        <textarea id="linkOutput" class="link-output" readonly placeholder="生成后显示 10 分钟有效链接"></textarea>
+      </section>
+    </main>
+    <script type="module" src="/src/kedaya-generator.ts"></script>
+  </body>
+</html>

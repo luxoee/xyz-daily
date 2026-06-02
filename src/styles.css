@@ -499,6 +499,62 @@ textarea:focus,
   cursor: pointer;
 }
 
+.json-output {
+  overflow: auto;
+  min-height: 240px;
+  max-height: 520px;
+  margin: 0;
+  padding: 14px;
+  border: 1px solid rgba(118, 74, 39, 0.18);
+  border-radius: 16px;
+  background: rgba(43, 33, 24, 0.92);
+  color: #fff8eb;
+  font-family: ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 13px;
+  line-height: 1.65;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.home-links {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.home-card {
+  display: grid;
+  gap: 8px;
+  padding: 18px;
+  border: 1px solid rgba(118, 74, 39, 0.18);
+  border-radius: 18px;
+  background: rgba(246, 238, 222, 0.78);
+  color: #2b2118;
+  text-decoration: none;
+}
+
+.home-card span {
+  color: #8a6040;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.home-card strong {
+  color: #26180f;
+  font-size: 22px;
+  letter-spacing: 0.08em;
+}
+
+.primary-home-card {
+  background: linear-gradient(135deg, #7b1f24, #a45d35);
+}
+
+.primary-home-card span,
+.primary-home-card strong {
+  color: #fff8eb;
+}
+
 @media (max-width: 920px) {
   .email-row {
     grid-template-columns: 1fr auto;
@@ -552,7 +608,8 @@ textarea:focus,
     flex-direction: column;
   }
 
-  .form-grid {
+  .form-grid,
+  .home-links {
     grid-template-columns: 1fr;
   }
 

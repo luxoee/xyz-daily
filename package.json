@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "pages:dev": "npm run build && wrangler pages dev dist --compatibility-date=2026-05-30",
+    "pages:dev:admin": "npm run build && wrangler pages dev dist --compatibility-date=2026-05-30 --ip 127.0.0.1 --port 8788 --binding CARD_ADMIN_TOKEN=$CARD_ADMIN_TOKEN",
     "deploy": "npm run build && wrangler pages deploy dist --project-name xyz-daily",
     "deploy:preview": "npm run build && wrangler pages deploy dist --project-name xyz-daily --branch preview"
   },

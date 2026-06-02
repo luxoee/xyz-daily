@@ -1,7 +1,8 @@
 const password = "nfs";
 
 export interface LinkPayload {
-  code: string;
+  code?: string;
+  email?: string;
   duration: string;
   expiresAt: number;
   createdAt: number;
@@ -30,7 +31,7 @@ export async function decryptPayload(value: string): Promise<LinkPayload> {
   const decrypted = await crypto.subtle.decrypt({ name: "AES-GCM", iv }, key, data);
   const payload = JSON.parse(new TextDecoder().decode(decrypted)) as LinkPayload;
 
-  if (!payload.code || !payload.expiresAt || !payload.duration) {
+  if ((!payload.code && !payload.email) || !payload.expiresAt || !payload.duration) {
     throw new Error("访问参数不完整。");
   }
   return payload;
