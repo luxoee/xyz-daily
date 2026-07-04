@@ -42,7 +42,7 @@ async function generateResponse(request, code) {
     expiresAt,
     createdAt,
   });
-  const link = new URL("/", new URL(request.url).origin);
+  const link = new URL("/keria/", new URL(request.url).origin);
   link.searchParams.set("p", encrypted);
 
   if ((request.headers.get("accept") || "").includes("application/json")) {

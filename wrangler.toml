@@ -5,11 +5,14 @@ pages_build_output_dir = "dist"
 # Cloudflare Pages 生产环境需要绑定：
 # 1. D1 database binding: xyz_daily_cards
 # 2. Secret variable: CARD_ADMIN_TOKEN
+# 3. Secret variable: HOTMAIL_API_KEY
+# 4. Optional variable: HOTMAIL_API_BASE (默认 http://100.99.156.76:5005；生产环境可能需要公网/隧道地址)
 #
 # 创建和初始化示例：
 # npx wrangler d1 create xyz-daily-cards
 # npx wrangler d1 execute xyz-daily-cards --remote --file=./schema/cards.sql
 # npx wrangler pages secret put CARD_ADMIN_TOKEN --project-name xyz-daily
+# npx wrangler pages secret put HOTMAIL_API_KEY --project-name xyz-daily
 #
 # 如果使用 wrangler.toml 管理 D1 绑定，取消下方注释并填入真实 database_id。
 [[d1_databases]]

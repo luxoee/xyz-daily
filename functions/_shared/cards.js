@@ -84,7 +84,7 @@ export async function createKedayaLink(request, email, durationMs = LINK_DURATIO
     expiresAt,
     createdAt,
   });
-  const link = new URL("/", new URL(request.url).origin);
+  const link = new URL("/kedaya/", new URL(request.url).origin);
   link.searchParams.set("p", encrypted);
   return { link: link.toString(), expiresAt, duration: formatDuration(durationMs) };
 }
