@@ -1,6 +1,6 @@
 import { errorResponse, json, readJsonOrForm } from "../../_shared/cards.js";
 
-const DEFAULT_HOTMAIL_API_BASE = "http://100.99.156.76:5005";
+const DEFAULT_HOTMAIL_API_BASE = "https://mail.dgx.cc.cd";
 const DEFAULT_HOTMAIL_API_KEY = "8cdcddd8bef6ef2900c6ba9fd448b521";
 
 export async function onRequestPost({ request, env }) {

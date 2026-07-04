@@ -11,7 +11,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Preview the built static app locally: `npm run preview`
 - Run the built app with Cloudflare Pages Functions locally: `npm run pages:dev`
 - Run Pages Functions locally with the admin token binding: `CARD_ADMIN_TOKEN=<token> npm run pages:dev:admin`
-- Run Pages Functions locally with Hotmail bindings: `HOTMAIL_API_KEY=<key> HOTMAIL_API_BASE=http://100.99.156.76:5005 npm run pages:dev:hotmail`
+- Run Pages Functions locally with Hotmail bindings: `HOTMAIL_API_KEY=<key> HOTMAIL_API_BASE=https://mail.dgx.cc.cd npm run pages:dev:hotmail`
 - Deploy to Cloudflare Pages: `npm run deploy`
 - Deploy preview branch: `npm run deploy:preview`
 - Initialize the D1 schema used by card APIs: `npx wrangler d1 execute xyz-daily-cards --remote --file=./schema/cards.sql`
